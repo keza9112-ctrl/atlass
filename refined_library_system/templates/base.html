@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}Page{% endblock %} · Atlas Library</title><link rel="stylesheet" href="{{ url_for('static',filename='style.css') }}"></head>
+<body>
+{% if user %}
+<div class="shell">
+<aside class="sidebar">
+<a class="brand" href="{{ url_for('dashboard') }}"><span class="brand-mark">A</span><span>ATLAS <small>LIBRARY SYSTEM</small></span></a>
+<div class="nav-label">WORKSPACE</div>
+<a class="nav {% if request.endpoint=='dashboard' %}active{% endif %}" href="{{ url_for('dashboard') }}">◫ <span>Overview</span></a>
+<a class="nav {% if request.endpoint=='books' %}active{% endif %}" href="{{ url_for('books') }}">▤ <span>Book catalogue</span></a>
+<a class="nav {% if request.endpoint=='members' %}active{% endif %}" href="{{ url_for('members') }}">♙ <span>Members</span></a>
+{% if user.role in ['admin','librarian'] %}<a class="nav {% if request.endpoint=='loans' %}active{% endif %}" href="{{ url_for('loans') }}">⇄ <span>Borrow & return</span></a>{% endif %}
+<a class="nav {% if request.endpoint=='history' %}active{% endif %}" href="{{ url_for('history') }}">◷ <span>Loan history</span></a>
+<a class="nav {% if request.endpoint=='reports' %}active{% endif %}" href="{{ url_for('reports') }}">▥ <span>Reports & insights</span></a>
+<div class="nav-label">ADMINISTRATION</div>
+{% if user.role=='admin' %}<a class="nav {% if request.endpoint in ['backup','download_backup'] %}active{% endif %}" href="{{ url_for('backup') }}">⬡ <span>Backups</span></a><a class="nav {% if request.endpoint=='users' %}active{% endif %}" href="{{ url_for('users') }}">♧ <span>Staff accounts</span></a>{% endif %}
+<a class="nav {% if request.endpoint=='account' %}active{% endif %}" href="{{ url_for('account') }}">⚙ <span>My account</span></a>
+<div class="sidebar-bottom"><div class="avatar">{{ user.full_name[:1]|upper }}</div><div class="profile"><strong>{{ user.full_name }}</strong><small>{{ user.role|title }}</small></div><form method="post" action="{{ url_for('logout') }}"><button class="logout" title="Sign out">↗</button></form></div>
+</aside>
+<section class="main-area"><header class="topbar"><div><span class="eyebrow">LIBRARY OPERATIONS</span><strong>{% block heading %}Overview{% endblock %}</strong></div><div class="top-right"><span class="status-dot"></span><span>Local database connected</span><span class="date-chip">{{ today }}</span></div></header>
+<main>{% with messages=get_flashed_messages(with_categories=true) %}{% if messages %}<div class="flash-stack">{% for category,message in messages %}<div class="flash {{ category }}">{{ message }}</div>{% endfor %}</div>{% endif %}{% endwith %}{% block content %}{% endblock %}</main>
+<footer>Atlas Library · Local-first records management <span>Designed for clarity and reliable daily operations</span></footer></section></div>
+{% else %}{% block unauthenticated %}{% endblock %}{% endif %}
+<script>document.querySelectorAll('[data-confirm]').forEach(el=>el.addEventListener('click',e=>{if(!confirm(el.dataset.confirm))e.preventDefault()}));</script>
+</body></html>
